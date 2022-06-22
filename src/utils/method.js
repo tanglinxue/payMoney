@@ -286,4 +286,15 @@ export default {
 			// });
 		})
 	},
+	// 获取code
+	getCode() {
+	  return new Promise((resolve) => {
+	    uni.login({
+	      provider: 'weixin',
+	      success: (res) => {
+	        resolve(res.code)
+	      },
+	    })
+	  })
+	},
 }

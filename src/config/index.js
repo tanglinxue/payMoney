@@ -1,14 +1,12 @@
 const env = process && process.env && process.env.NODE_ENV;
 console.log(env)
+const baseApi = 'https://mini.lexiangdaojia.cn'
 const EnvConfig = {
 	development: {
-		// baseApi:'/api'
-		// baseApi: 'http://manager.diandiantn.com'
-baseApi: 'http://manager.diandiantn.com',
-		weixinLogin: 'https://h5.diandiantn.com'
+		baseApi
 	},
 	production: {
-		baseApi: 'http://manager.diandiantn.com'
+		baseApi
 	}
 }
 export default {

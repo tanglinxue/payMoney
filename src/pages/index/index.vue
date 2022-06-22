@@ -1,35 +1,20 @@
 <template>
 	<view class="main column-center">
-		<view class="banner">
-			<swiper class="swiper" :autoplay="true" :circular="true">
-				<swiper-item v-for="(item, index) in list" :key="index"><img :src="item.img" class="img" /></swiper-item>
-			</swiper>
-			<view class="dots" v-if="list.length > 1">
-				<block v-for="(item, index) in list" :key="index"><view class="dot" :class="index == swiperCurrent ? 'active' : ''"></view></block>
-			</view>
+		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
+		<!-- <button @click="copy">复制code</button> -->
+		<view class='row-between mgb20'>
+			<text>type输入2</text>
+			<input type='number' v-model="type">
 		</view>
-		<view class="btn-box mgb20"><view class="main-btn red-shadow">开始报价</view></view>
-		<view class="boxOuter-box">
-			<view class="boxOuter">
-				<view class="title row-between"><text class='txt1'>最新报价:</text><text @click='jump(1)'>更多...</text></view>
-				<view class="list">
-					<view class="item">旅程新品发布会2022-04-06 13:20</view>
-					<view class="item">旅程新品发布会2022-04-06 13:20</view>
-					<view class="item">旅程新品发布会2022-04-06 13:20</view>
-					<view class="item">旅程新品发布会2022-04-06 13:20</view>
-					<view class="item">旅程新品发布会2022-04-06 13:20</view>
-				</view>
-			</view>
-			<view class="boxOuter">
-				<view class="title row-between"><text class='txt1'>报价模板:</text><text @click='jump(2)'>更多...</text></view>
-				<view class="list">
-					<view class="item">双机位+直播+包装</view>
-					<view class="item">双机位+直播+包装</view>
-					<view class="item">双机位+直播+包装</view>
-					<view class="item">双机位+直播+包装</view>
-				</view>
-			</view>
+		<view class='row-between mgb20'>
+			<text>订单号输入</text>
+			<input type='text' v-model="order_no">
 		</view>
+		<view class='row-between mgb20'>
+			<text>token输入</text>
+			<input type='text' v-model="token">
+		</view>
+		<button @click="Pay">支付</button>
 	</view>
 </template>
 
@@ -37,27 +22,65 @@
 export default {
 	data() {
 		return {
-			list: [
-				{
-					img: 'https://baikebcs.bdimg.com/解淑萍右侧轮播.png'
-				},
-				{
-					img: 'https://baikebcs.bdimg.com/解淑萍右侧轮播.png'
-				},
-				{
-					img: 'https://baikebcs.bdimg.com/解淑萍右侧轮播.png'
-				}
-			],
-			swiperCurrent: 0
+			code: '',
+			type: '',
+			order_no: '',
+			token:''
 		};
 	},
-	methods:{
-		jump(type) {
-			if (type == 1) {
-				this.$jump(`/pages/my/historyRecord`);
-			} else if (type == 2) {
-				this.$jump(`/pages/index/templateRecord`);
+	onLoad() {
+		//this.Pay();
+	},
+	methods: {
+		copy() {
+			wx.setClipboardData({
+				data: this.code, //传入复制的内容
+				success: function() {
+					wx.showToast({
+						title: '复制成功'
+					});
+				}
+			});
+		},
+		async getCode() {
+			this.code = await this.$methods.getCode();
+			console.log('code=>' + this.code);
+		},
+		async Pay() {
+			
+			await this.getCode();
+			let { code, type, order_no ,token} = this;
+			if(!token){
+				return this.$methods.showToast('请输入token')
 			}
+			if(!type){
+				return this.$methods.showToast('请输入type')
+			}
+			if(!order_no){
+				return this.$methods.showToast('请输入订单号')
+			}
+			//#ifdef MP-WEIXIN
+			const API = this.$API.home.wetpay
+			//#endif
+			//#ifdef MP-ALIPAY
+			const API = this.$API.home.alipay
+			//#endif
+			let data = await API({ code, type, order_no,token });
+			const { timeStamp, nonceStr, paySign, signType, package: pack } = JSON.parse(data);
+			uni.requestPayment({
+				provider: 'wxpay',
+				timeStamp: timeStamp,
+				nonceStr: nonceStr,
+				package: pack,
+				signType: signType,
+				paySign: paySign,
+				success: res => {
+					console.log('成功');
+				},
+				fail: err => {
+					console.log('失败');
+				}
+			});
 		}
 	}
 };
@@ -69,64 +92,14 @@ export default {
 .main {
 	.banner {
 		width: 100%;
-		height: 400rpx;
-		position: relative;
-		.swiper {
-			width: 100%;
-			height: 100%;
-
-			swiper-item {
-				width: 100%;
-				height: 100%;
-
-				.img {
-					width: 100%;
-					height: 100%;
-				}
-			}
-		}
-		.dots {
-			position: absolute;
-			left: 0;
-			right: 0;
-			bottom: 30rpx;
-			display: flex;
-			justify-content: center;
-			.dot {
-				margin: 0 4rpx;
-				width: 40rpx;
-				height: 4rpx;
-				background: rgba(255, 255, 255, 0.5);
-				transition: all 0.6s;
-				&.active {
-					background: white;
-				}
-			}
-		}
 	}
-	.btn-box {
-		width: 100%;
-		background: $white;
-		padding: 30rpx;
+	input{
+		border:1px solid #ededed;
+		margin-left: 10rpx;
+		flex:1
 	}
-	.boxOuter-box {
-		width: 100%;
-		padding: 0 30rpx;
-		.title {
-			font-size:26rpx;
-			margin-bottom: 20rpx;
-			.txt1{
-				font-size: 30rpx;
-				font-weight: bold;
-			}
-		}
-		.list {
-			padding: 0 20rpx;
-			.item {
-				padding: 10rpx 0;
-				font-size: 26rpx;
-			}
-		}
+	.row-between{
+		width:750rpx
 	}
 }
 </style>
