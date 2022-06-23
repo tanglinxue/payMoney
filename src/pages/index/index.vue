@@ -66,9 +66,8 @@ export default {
 			const API = this.$API.home.alipay
 			//#endif
 			let data = await API({ code, type, order_no,token });
-			console.log(data)
 			//#ifdef MP-WEIXIN
-			const { timeStamp, nonceStr, paySign, signType, package: pack } = JSON.parse(data);
+			const { timeStamp, nonceStr, paySign, signType, package: pack } = JSON.parse(data);	
 			uni.requestPayment({
 				provider: 'wxpay',
 				timeStamp: timeStamp,
@@ -84,22 +83,18 @@ export default {
 				}
 			});
 			//#endif
-			//#ifdef MP-WEIXIN
-			// const { timeStamp, nonceStr, paySign, signType, package: pack } = JSON.parse(data);
-			// uni.requestPayment({
-			// 	provider: 'alipay',
-			// 	timeStamp: timeStamp,
-			// 	nonceStr: nonceStr,
-			// 	package: pack,
-			// 	signType: signType,
-			// 	paySign: paySign,
-			// 	success: res => {
-			// 		console.log('成功');
-			// 	},
-			// 	fail: err => {
-			// 		console.log('失败');
-			// 	}
-			// });
+			//#ifdef MP-ALIPAY	
+			uni.requestPayment({
+				provider: 'alipay',
+				orderInfo:data,
+				success: res => {
+					console.log('成功');
+				},
+				fail: err => {
+					console.log(err)
+					console.log('失败');
+				}
+			});
 			//#endif
 		}
 	}
