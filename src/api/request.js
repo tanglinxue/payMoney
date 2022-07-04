@@ -2,18 +2,10 @@ import config from '@/config'
 import store from '@/store'
 import methods from '@/utils/method.js'
 export default function service(options) {
-	// const token = store.state.user.token
-	// console.log(token)
-	// if(!token){
-	// 	const res =  methods.toLogin()
-	// 	if(!res) return
-	// }
-	// options.data.token = 'XfNcOofWrvnilA'
-	console.log(token)
-	const token =options.data.token
-	delete options.token
-	 options.url =config.baseApi + options.url
-	//options.url = (options.weixin ? config.weixinLogin : config.baseApi) + options.url
+
+	const token = store.state.user.token;
+	options.url =config.baseApi + options.url
+
 	return new Promise((resolve, reject) => {
 		uni.request({
 			url: options.url,

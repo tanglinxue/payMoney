@@ -1,8 +1,7 @@
 <template>
 	<view class="main column-center">
 		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
-		<!-- <button @click="copy">复制code</button> -->
-		<view class='row-between mgb20'>
+		<!-- <view class='row-between mgb20'>
 			<text>type输入2</text>
 			<input type='number' v-model="type">
 		</view>
@@ -14,7 +13,7 @@
 			<text>token输入</text>
 			<input type='text' v-model="token">
 		</view>
-		<button @click="Pay">支付</button>
+		<button @click="Pay">支付</button> -->
 	</view>
 </template>
 
@@ -25,47 +24,34 @@ export default {
 			code: '',
 			type: '',
 			order_no: '',
-			token:''
 		};
 	},
-	onLoad() {
-		//this.Pay();
+	onLoad(options) {
+		console.log(options)
+		if(options.token){
+			const {token,type,order_no} = options;
+			this.type = type;
+			this.order_no = order_no
+			this.$store.dispatch("user/updateToken", token);
+			this.Pay();
+		}
+		
 	},
 	methods: {
-		copy() {
-			wx.setClipboardData({
-				data: this.code, //传入复制的内容
-				success: function() {
-					wx.showToast({
-						title: '复制成功'
-					});
-				}
-			});
-		},
 		async getCode() {
 			this.code = await this.$methods.getCode();
 			console.log('code=>' + this.code);
 		},
 		async Pay() {
-			
 			await this.getCode();
-			let { code, type, order_no ,token} = this;
-			if(!token){
-				return this.$methods.showToast('请输入token')
-			}
-			if(!type){
-				return this.$methods.showToast('请输入type')
-			}
-			if(!order_no){
-				return this.$methods.showToast('请输入订单号')
-			}
+			let { code, type, order_no} = this;
 			//#ifdef MP-WEIXIN
 			const API = this.$API.home.wetpay
 			//#endif
 			//#ifdef MP-ALIPAY
 			const API = this.$API.home.alipay
 			//#endif
-			let data = await API({ code, type, order_no,token });
+			let data = await API({ code, type, order_no });
 			//#ifdef MP-WEIXIN
 			const { timeStamp, nonceStr, paySign, signType, package: pack } = JSON.parse(data);	
 			uni.requestPayment({
