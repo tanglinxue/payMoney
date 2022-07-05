@@ -1,19 +1,22 @@
 <template>
 	<view class="main column-center">
+		<!-- #ifdef MP-WEIXIN -->
 		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
-		<!-- <view class='row-between mgb20'>
-			<text>type输入2</text>
-			<input type='number' v-model="type">
+		<!-- #endif -->
+		<!-- #ifdef MP-ALIPAY -->
+		<image src="@/static/images/banner2.png" class="banner2 mgb20" mode="widthFix"></image>
+		<!-- #endif -->
+		<view class='fail column-center' v-if='fail'>
+			<image src="@/static/images/img1.png" class='right-img'  mode="widthFix"></image>
+			<view class='popup column-center'>
+				<image src="@/static/images/popup1.png"  mode="widthFix" class='popup1Img'></image>
+				<view class='text1'>支付失败</view>
+				<view class='text2'>返回APP重新下单</view>
+				<!-- #ifdef MP-WEIXIN -->
+				<view class='btn row-center'>确定</view>
+				<!-- #endif -->
+			</view>
 		</view>
-		<view class='row-between mgb20'>
-			<text>订单号输入</text>
-			<input type='text' v-model="order_no">
-		</view>
-		<view class='row-between mgb20'>
-			<text>token输入</text>
-			<input type='text' v-model="token">
-		</view>
-		<button @click="Pay">支付</button> -->
 	</view>
 </template>
 
@@ -24,12 +27,14 @@ export default {
 			code: '',
 			type: '',
 			order_no: '',
+			fail:false
 		};
 	},
 	onLoad(options) {
 		console.log(options)
-		if(options.token){
-			const {token,type,order_no} = options;
+		if(options.scheme){
+			const scheme = decodeURIComponent(scheme)
+			const {token,type,order_no} = scheme;
 			this.type = type;
 			this.order_no = order_no
 			this.$store.dispatch("user/updateToken", token);
@@ -94,6 +99,11 @@ export default {
 	.banner {
 		width: 100%;
 	}
+	.banner2{
+		width:726rpx;
+		height:496rpx;
+		margin-top:12rpx;
+	}
 	input{
 		border:1px solid #ededed;
 		margin-left: 10rpx;
@@ -101,6 +111,53 @@ export default {
 	}
 	.row-between{
 		width:750rpx
+	}
+}
+.fail{
+	position: fixed;
+	width:100%;
+	height:100%;
+	left:0;
+	top:0;
+	background:rgba(0, 0, 0, 0.5);
+	.right-img{
+		width: 254rpx;
+		height:86rpx;
+		position: absolute;
+		top:18rpx;
+		right:34rpx
+	}
+	.popup{	
+		width: 630rpx;
+		background: #FFFFFF;
+		border-radius: 16rpx;
+		padding:80rpx 0;
+		
+		.popup1Img{
+			width:328rpx;
+			height:208rpx;
+			margin-bottom: 50rpx;
+		}
+		.text1{
+			font-weight: bold;
+			color:#333;
+			font-size:40rpx;
+			margin-bottom: 15rpx;
+		}
+		.text2{
+			color: #959595;
+			font-size:30rpx;
+		}
+		.btn{
+			font-size:30rpx;
+			color: #FFFFFF;
+			width:388rpx;
+			height:84rpx;
+			background: url(@/static/images/btn-bg.png);
+			background-size: 100% 100%;
+			letter-spacing: 1px;
+			margin-top: 60rpx;
+		}
 	}
 }
 </style>
