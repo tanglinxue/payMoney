@@ -78,6 +78,16 @@ export default {
 			mask: true
 		})
 	},
+	getObj(str) {
+		let parObj = {};
+		let strArr = str.split('&')
+		strArr.forEach(ele => {
+			let key = ele.split('=')[0];
+			let val = ele.split('=')[1];
+			parObj[key] = val;
+		})
+		return parObj
+	},
 	//获取今天，明天，后天的日期
 	getDate(type = 0, count = 3) {
 		let day = new Date();
@@ -123,13 +133,13 @@ export default {
 		})
 	},
 	//  时间格式化
-	format(time=0, type = 'yyyy-MM-dd HH:mm:ss') {
-		if(Number(time).toString().length<11){
+	format(time = 0, type = 'yyyy-MM-dd HH:mm:ss') {
+		if (Number(time).toString().length < 11) {
 			time = time * 1000
-		}else {
-			time =  time*1
+		} else {
+			time = time * 1
 		}
-		
+
 		/**
 		 * 对Date的扩展，将 Date 转化为指定格式的String 月(M)、日(d)、12小时(h)、24小时(H)、分(m)、秒(s)、周(E)、季度(q)
 		 * 可以用 1-2 个占位符 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) eg: (new
@@ -191,18 +201,27 @@ export default {
 
 		return new Date(time).format(type);
 	},
-	getLocation() {	
+	getLocation() {
 		return new Promise((resolve, reject) => {
 			uni.getLocation({
 				type: 'gcj02',
 				geocode: true, //获取城市具体地址
 				success: (res) => {
 					console.log(JSON.stringify(res))
-					const {province,city,district,street,streetNum} = res.address
-					let address =  province+city+district+street+streetNum
-					resolve({...res,address})
+					const {
+						province,
+						city,
+						district,
+						street,
+						streetNum
+					} = res.address
+					let address = province + city + district + street + streetNum
+					resolve({
+						...res,
+						address
+					})
 				},
-				fail:(err)=>{
+				fail: (err) => {
 					console.log(err)
 				}
 			})
@@ -210,45 +229,62 @@ export default {
 	},
 	// 获取位置
 	getLocationH5() {
-		
+
 		return new Promise((resolve, reject) => {
 			console.log(locationSuccess)
-			if(!locationSuccess){
-				resolve({lat:0,lng:0,address:''})
-				return 
+			if (!locationSuccess) {
+				resolve({
+					lat: 0,
+					lng: 0,
+					address: ''
+				})
+				return
 			}
 			var geolocation = new qq.maps.Geolocation("4U4BZ-VP3KU-W5TVC-BFILJ-JPWYE-GNBX2", "myapp");
 			console.log(geolocation)
 			console.log('地图')
 			var options = {
-				timeout:10000,
-				failTipFlag:true
-				
+				timeout: 10000,
+				failTipFlag: true
+
 			};
 			geolocation.getLocation(showPosition, showErr, options);
+
 			function showPosition(position) {
 				console.log('定位成功2')
 				console.log(position)
-				const {province,city,addr,district} = position
-				let address =  province+city
-				if(addr){
-					address += district+addr
+				const {
+					province,
+					city,
+					addr,
+					district
+				} = position
+				let address = province + city
+				if (addr) {
+					address += district + addr
 				}
-				
-				resolve({...position,address})
+
+				resolve({
+					...position,
+					address
+				})
 			}
+
 			function showErr() {
 				console.log('定位失败')
 				locationSuccess = false
 				uni.showToast({
-					title:'获取定位失败，请打开定位：【设置】-【隐私】-【定位服务】',
+					title: '获取定位失败，请打开定位：【设置】-【隐私】-【定位服务】',
 					duration: 5000,
-					icon:'none'
-				
+					icon: 'none'
+
 				});
-				resolve({lat:0,lng:0})
+				resolve({
+					lat: 0,
+					lng: 0
+				})
 			}
-	
+
 			// uni.getLocation({
 			// 	isHighAccuracy:true,
 			// 	type: 'wgs84',
@@ -270,9 +306,11 @@ export default {
 				timeout: 8000
 			};
 			geolocation.chooseLocation(showPosition, showErr, options);
+
 			function showPosition(res) {
 				resolve(res)
 			}
+
 			function showErr() {
 				resolve({})
 			}
@@ -288,13 +326,13 @@ export default {
 	},
 	// 获取code
 	getCode() {
-	  return new Promise((resolve) => {
-	    uni.login({
-	      provider: 'weixin',
-	      success: (res) => {
-	        resolve(res.code)
-	      },
-	    })
-	  })
+		return new Promise((resolve) => {
+			uni.login({
+				provider: 'weixin',
+				success: (res) => {
+					resolve(res.code)
+				},
+			})
+		})
 	},
 }
