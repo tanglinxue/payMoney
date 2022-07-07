@@ -4,9 +4,17 @@
 		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
 		<!-- #endif -->
 		<!-- #ifdef MP-ALIPAY -->
-		<image src="@/static/images/banner2.png" class="banner2 mgb20" mode="widthFix"></image>
+		<!-- <image src="@/static/images/banner2.png" class="banner2 mgb20" mode="widthFix"></image> -->
+		<view class='payPopup'>
+			<view class='title'>付款金额</view>
+			<view class='enterMoney row-start'>
+				<text>￥</text>
+				<input type="number" placeholder="请输入付款金额"/>
+			</view>
+			<view class='pay-btn row-center' @click='fail=true'>立即支付</view>
+		</view>
 		<!-- #endif -->
-		<view class='fail column-center' v-if='!fail'>
+		<view class='fail column-center' v-if='fail'>
 			<image src="@/static/images/img1.png" class='right-img' mode="widthFix"></image>
 			<view class='popup column-center'>
 				<image src="@/static/images/popup1.png" mode="widthFix" class='popup1Img'></image>
@@ -120,22 +128,41 @@
 		.banner {
 			width: 100%;
 		}
-
-		.banner2 {
-			width: 726rpx;
-			height: 496rpx;
-			margin-top: 12rpx;
+		.payPopup{
+			width: 710rpx;
+			background: #FFFFFF;
+			box-shadow: 0px 0px 8rpx 0px rgba(218,218,218,0.5000);
+			border-radius: 12rpx;
+			margin-top: 20rpx;
+			padding:60rpx 30rpx 90rpx;
+			.title{
+				font-size: 30rpx;
+				color:#111;
+				margin-bottom: 40rpx;
+			}
+			.enterMoney{
+				padding-bottom: 16rpx;
+				border-bottom: 1px solid #F2F2F2;
+				margin-bottom: 90rpx;
+				height:50rpx;
+				text{
+					font-size: 32rpx;
+					font-weight: bold;
+					color:#111111
+				}
+			}
+			.pay-btn{
+				width: 640rpx;
+				height: 96rpx;
+				background: #2A93F8;
+				border-radius: 50rpx;
+				font-size: 36rpx;
+				color:#fff;
+				font-weight: bold;
+				letter-spacing: 1px;
+			}
 		}
 
-		input {
-			border: 1px solid #ededed;
-			margin-left: 10rpx;
-			flex: 1
-		}
-
-		.row-between {
-			width: 750rpx
-		}
 	}
 
 	.fail {

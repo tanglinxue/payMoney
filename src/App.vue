@@ -34,7 +34,7 @@
 
 	/*每个页面公共css */
 	page {
-		background: $backColor;
+		background: #F6F6F6 ;
 		font-size: 30rpx;
 		color: $mainBlack;
 	}
