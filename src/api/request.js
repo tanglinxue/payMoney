@@ -2,10 +2,14 @@ import config from '@/config'
 import store from '@/store'
 import methods from '@/utils/method.js'
 export default function service(options) {
-
-	const token = store.state.user.token;
+	
+	let token = store.state.user.token;
 	options.url =config.baseApi + options.url
-
+	console.log(options)
+	if(options.data.token){
+		token = options.data.token;
+		delete options.data.token
+	}
 	return new Promise((resolve, reject) => {
 		uni.request({
 			url: options.url,
