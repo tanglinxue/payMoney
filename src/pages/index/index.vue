@@ -59,15 +59,26 @@ export default {
 	onLoad(options) {
 		console.log('你好')
 		console.log(options);
-
+		
+		//#ifdef MP-WEIXIN
 		if (options.scheme) {
 			const scheme = decodeURIComponent(options.scheme);
+			console.log(this.$methods.getObj(scheme));
 			const { token, type, order_no } = this.$methods.getObj(scheme);
 			this.type = type;
 			this.order_no = order_no;
 			this.$store.dispatch('user/updateToken', token);
 			this.Pay();
 		}
+		//#endif
+		//#ifdef MP-ALIPAY
+		this.$methods.showToast(JSON.stringify(options))
+		const { token, type, order_no } = options;
+		this.type = type;
+		this.order_no = order_no;
+		this.$store.dispatch('user/updateToken', token);
+		this.Pay();
+		//#endif
 	},
 	methods: {
 		async getCode() {
