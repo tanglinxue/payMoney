@@ -72,12 +72,15 @@ export default {
 		}
 		//#endif
 		//#ifdef MP-ALIPAY
-		this.$methods.showToast(JSON.stringify(options))
-		const { token, type, order_no } = options;
-		this.type = type;
-		this.order_no = order_no;
-		this.$store.dispatch('user/updateToken', token);
-		this.Pay();
+		if(options.order_no){
+			this.$methods.showToast(JSON.stringify(options))
+			const { token, type, order_no } = options;
+			this.type = type;
+			this.order_no = order_no;
+			this.$store.dispatch('user/updateToken', token);
+			this.Pay();
+		}
+		
 		//#endif
 	},
 	methods: {

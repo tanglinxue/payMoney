@@ -13,12 +13,6 @@
 			"style": {
 				"navigationBarTitleText": "乐享收银台"
 			}
-		},
-		{
-			"path": "pages/index/index2",
-			"style": {
-				"navigationBarTitleText": "乐享收银台2"
-			}
 		}
 	],
 	"globalStyle": {
