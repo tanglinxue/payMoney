@@ -11,7 +11,7 @@
 
 		onLaunch() {
 			console.log('App Launch');
-			console.log(this.$route)
+			
 		},
 		onShow: function() {
 			console.log('App Show');

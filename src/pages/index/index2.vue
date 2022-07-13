@@ -1,5 +1,6 @@
 <template>
 	<view class="main column-center">
+		我是垃圾
 		<!-- #ifdef MP-WEIXIN -->
 		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
 		<!-- #endif -->
@@ -62,6 +63,7 @@ export default {
 
 		if (options.scheme) {
 			const scheme = decodeURIComponent(options.scheme);
+			console.log(this.$methods.getObj(scheme));
 			const { token, type, order_no } = this.$methods.getObj(scheme);
 			this.type = type;
 			this.order_no = order_no;
