@@ -5,11 +5,6 @@ export default function service(options) {
 	
 	let token = store.state.user.token;
 	options.url =config.baseApi + options.url
-	console.log(options)
-	if(options.data.token){
-		token = options.data.token;
-		delete options.data.token
-	}
 	return new Promise((resolve, reject) => {
 		uni.request({
 			url: options.url,

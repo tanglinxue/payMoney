@@ -1,9 +1,6 @@
 <template>
 	<view class="main column-center">
-		<!-- #ifdef MP-WEIXIN -->
 		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
-		<!-- #endif -->
-		
 		<!-- 	<view class='payPopup'>
 			<view class='title'>付款金额</view>
 			<view class='enterMoney row-start'>
@@ -12,9 +9,9 @@
 			</view>
 			<view class='pay-btn row-center' @click='fail=true'>立即支付</view>
 		</view> -->
+		<!-- #ifdef MP-ALIPAY -->
+		<!-- 支付宝 -->
 		<view class="main column-center">
-			<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
-			<!-- <button @click="copy">复制code</button> -->
 			<view class="row-between mgb20">
 				<text>type输入</text>
 				<input type="number" v-model="type" />
@@ -27,15 +24,17 @@
 				<text>token输入</text>
 				<input type="text" v-model="token" />
 			</view>
-			<button @click="Pay2">支付</button>
+			<button @click="PayBtn">支付</button>
 		</view>
+		<!-- #endif -->
 	
-		<view class="fail column-center" v-if="fail">
+		<view class="fail column-center" v-if="showPopup">
 			<image src="@/static/images/img1.png" class="right-img" mode="widthFix"></image>
 			<view class="popup column-center">
-				<image src="@/static/images/popup1.png" mode="widthFix" class="popup1Img"></image>
-				<view class="text1">支付失败</view>
-				<view class="text2">返回APP重新下单</view>
+				<image src="@/static/images/popup2.png" mode="widthFix" class="popup2Img" v-if='isSuccess'></image>
+				<image src="@/static/images/popup1.png" mode="widthFix" class="popup1Img" v-else></image>
+				<view class="text1">{{isSuccess?"恭喜您 支付成功":"支付失败"}}</view>
+				<view class="text2">{{isSuccess?"感谢您对乐享到家的支持":"返回APP重新下单"}}</view>
 				<!-- #ifdef MP-WEIXIN -->
 				<button open-type="launchApp" app-parameter="wechat" binderror="launchAppError" class="btn row-center">确定</button>
 				<!-- #endif -->
@@ -52,43 +51,33 @@ export default {
 			type: '',
 			order_no: '',
 			token:'',
-			fail: false
+			showPopup: false,
+			isSuccess:true
 		};
 	},
-
-	onLoad(options) {
-		console.log('你好')
-		console.log(options);
-		
-		//#ifdef MP-WEIXIN
-		if (options.scheme) {
+	
+	onLoad(options) {	
+		if (options.scheme || options.order_no) {
+			//#ifdef MP-WEIXIN
 			const scheme = decodeURIComponent(options.scheme);
-			console.log(this.$methods.getObj(scheme));
 			const { token, type, order_no } = this.$methods.getObj(scheme);
-			this.type = type;
-			this.order_no = order_no;
-			this.$store.dispatch('user/updateToken', token);
-			this.Pay();
-		}
-		//#endif
-		//#ifdef MP-ALIPAY
-		if(options.order_no){
-			this.$methods.showToast(JSON.stringify(options))
+			//#endif
+			//#ifdef MP-ALIPAY
 			const { token, type, order_no } = options;
+			//#endif
 			this.type = type;
 			this.order_no = order_no;
 			this.$store.dispatch('user/updateToken', token);
 			this.Pay();
-		}
-		
-		//#endif
+		}		
 	},
 	methods: {
 		async getCode() {
 			this.code = await this.$methods.getCode();
 			console.log('code=>' + this.code);
 		},
-		async Pay2() {
+		async PayBtn() {
+			// 按钮支付
 			await this.getCode();
 			let { code, type, order_no, token } = this;
 			if (!token) {
@@ -100,13 +89,14 @@ export default {
 			if (!order_no) {
 				return this.$methods.showToast('请输入订单号');
 			}
+			this.$store.dispatch('user/updateToken', token);
 			//#ifdef MP-WEIXIN
 			const API = this.$API.home.wetpay;
 			//#endif
 			//#ifdef MP-ALIPAY
 			const API = this.$API.home.alipay;
 			//#endif
-			let data = await API({ code, type, order_no, token });
+			let data = await API({ code, type, order_no });
 			//#ifdef MP-WEIXIN
 			const { timeStamp, nonceStr, paySign, signType, package: pack } = JSON.parse(data);
 			uni.requestPayment({
@@ -120,6 +110,7 @@ export default {
 					console.log('成功');
 				},
 				fail: err => {
+					console.log(err);
 					console.log('失败');
 				}
 			});
@@ -162,10 +153,13 @@ export default {
 				signType: signType,
 				paySign: paySign,
 				success: res => {
-					console.log('成功');
+					this.showPopup = true;
+					this.isSuccess = true
 				},
 				fail: err => {
-					this.fail = true;
+					console.log(err)
+					this.showPopup = true;
+					this.isSuccess = false
 				}
 			});
 			//#endif
@@ -174,11 +168,19 @@ export default {
 				provider: 'alipay',
 				orderInfo: data,
 				success: res => {
-					console.log('成功');
+					this.showPopup = true;
+					
+					if(res.result){
+						this.isSuccess = true;
+					}else{
+						this.isSuccess = false;
+					}
+				
 				},
 				fail: err => {
-					console.log(err);
-					console.log('失败');
+					console.log(err)
+					this.showPopup = true;
+					this.isSuccess = false
 				}
 			});
 			//#endif
@@ -191,6 +193,9 @@ export default {
 @import '@/static/scss/index.scss';
 
 .main {
+	input{
+		border:1px solid #ededed
+	}
 	.banner {
 		width: 100%;
 	}
@@ -256,6 +261,10 @@ export default {
 			width: 328rpx;
 			height: 208rpx;
 			margin-bottom: 50rpx;
+		}
+		.popup2Img{
+			width: 234rpx;
+			height: 284rpx;
 		}
 
 		.text1 {
