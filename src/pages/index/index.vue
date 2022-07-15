@@ -1,8 +1,20 @@
 <template>
 	<view class="main column-center">
 		<!-- #ifdef MP-WEIXIN -->
-		<image src="@/static/images/banner.png" class="banner mgb20" mode="widthFix"></image>
+		<image src="@/static/images/banner3.png" class="banner mgb20" mode="widthFix"></image>
+		<view class='box'>
+			<view class='item row-between'>
+				<view class='left-part'>
+					<view class='row-start num'><view class='circle'></view><text>订单号14345465765</text></view>
+					<view class='date font24 gray'>2022-04-18</view>
+				</view>
+				<view class='right-part'>
+					¥5
+				</view>
+			</view>
+		</view>
 		<!-- #endif -->
+		<!-- #ifdef MP-ALIPAY -->
 		<view class='payPopup'>
 			<view class='title'>付款金额</view>
 			<view class='enterMoney row-start'>
@@ -11,6 +23,7 @@
 			</view>
 			<view class='pay-btn row-center' @click='failAction'>立即支付</view>
 		</view>
+		<!-- #endif -->
 		<!-- #ifdef MP-ALIPAY -->
 		<!-- 支付宝 -->
 		<!-- <view class="main column-center">
@@ -29,7 +42,6 @@
 			<button @click="PayBtn">支付</button>
 		</view> -->
 		<!-- #endif -->
-
 		<view class="fail column-center" v-if="showPopup">
 			<image src="@/static/images/img1.png" class="right-img" mode="widthFix"></image>
 			<view class="popup column-center">
@@ -234,7 +246,34 @@
 
 <style lang="scss" scoped>
 	@import '@/static/scss/index.scss';
-
+	.box{
+		padding:20rpx;
+		.item{
+			width: 710rpx;
+			height: 144rpx;
+			background: #FFFFFF;
+			box-shadow: 0px 0px 8rpx 0px rgba(218,218,218,0.5000);
+			border-radius: 12rpx;
+			padding:25rpx;
+			margin-bottom: 20rpx;
+			.num{
+				font-size: 28rpx;
+				margin-bottom: 15rpx;
+				font-weight: bold;
+				.circle{
+					width: 6rpx;
+					height: 6rpx;
+					background: #FF824E;
+					margin-right: 12rpx;
+				}
+			}
+			.right-part{
+				color:#FF824E;
+				font-size:28rpx;
+				font-weight: bold;
+			}
+		}
+	}
 	.main {
 		input {
 			// border: 1px solid #ededed
