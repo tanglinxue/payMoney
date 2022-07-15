@@ -18,4 +18,12 @@ export default {
 		})
 		return res
 	},
+	async getList(data = {}) {
+		let res = await request({
+			url: '/api/orders/order_list',
+			method: 'POST',
+			data
+		})
+		return res
+	},
 }

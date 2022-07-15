@@ -3,14 +3,14 @@
 		
 		<!-- #ifdef MP-WEIXIN -->
 		<image src="@/static/images/banner3.png" class="banner mgb20" mode="widthFix"></image>
-		<view class='box'>
-			<view class='item row-between'>
+		<view class='box' v-if='list.length'>
+			<view class='item row-between' v-for='item in list' :key='item.create_time'>
 				<view class='left-part'>
-					<view class='row-start num'><view class='circle'></view><text>订单号14345465765</text></view>
-					<view class='date font24 gray'>2022-04-18</view>
+					<view class='row-start num'><view class='circle'></view><text>订单号{{item.order_no}}</text></view>
+					<view class='date font24 gray'>{{ $methods.format(item.create_time,'yyyy-MM-dd') }}</view>
 				</view>
 				<view class='right-part'>
-					¥5
+					¥{{item.order_all_price}}
 				</view>
 			</view>
 		</view>
@@ -60,16 +60,20 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex';
 	export default {
 		data() {
 			return {
 				code: '',
 				type: '',
 				order_no: '',
-				token: '',
 				showPopup: false,
-				isSuccess: true
+				isSuccess: true,
+				list:[]
 			};
+		},
+		computed: {
+			...mapState('user', ['token'])
 		},
 		onLoad(options) {
 			if (options.scheme || options.order_no) {
@@ -93,8 +97,19 @@
 				this.$store.dispatch('user/updateToken', token);
 				this.Pay();
 			}
+			//#ifdef MP-WEIXIN
+			// this.$store.dispatch('user/updateToken', '57fee06c-53ea-4c5c-9888-0aa0f92261db');
+			if(this.token){
+				this.getList()
+			}
+			//#endif
 		},
 		methods: {
+			async getList(){
+				const {list} = await  this.$API.home.getList();
+				console.log(list)
+				this.list = list
+			},
 			async getCode() {
 				this.code = await this.$methods.getCode();
 				console.log('code=>' + this.code);
