@@ -1,5 +1,6 @@
 <template>
 	<view class="main column-center">
+		
 		<!-- #ifdef MP-WEIXIN -->
 		<image src="@/static/images/banner3.png" class="banner mgb20" mode="widthFix"></image>
 		<view class='box'>
@@ -69,10 +70,6 @@
 				showPopup: false,
 				isSuccess: true
 			};
-		},
-		onShow(){
-			this.showPopup = false;
-			this.isSuccess = true
 		},
 		onLoad(options) {
 			if (options.scheme || options.order_no) {
